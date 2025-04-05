@@ -1,4 +1,6 @@
-#include <stdio.h>
+#pragma once
+
+#include <iostream>
 #include <vector>
 
 class Map {
@@ -19,5 +21,13 @@ public:
     std::vector<std::vector<char>> map;
 
     void print();
+
+    int getX() {
+        return x;
+    }
+
+    int getY() {
+        return y;
+    }
 
 };
