@@ -11,7 +11,7 @@ Zone::Zone(Map *m, Player *p1, Player *p2) {
 
     printLine = "";
     printIdx = 0;
-    printLineLength = map->getY() * (1 + 7) + 1;
+    printLineLength = map->getY() * (1 + 7) + 1 + 1;
 }
 
 void Zone::print() {
@@ -39,7 +39,7 @@ void Zone::print() {
         printLine +="\n";
     }
 
-    printLine[player1->getCursor()->getX() * printLineLength * 4 + printLineLength * 2 + player2->getCursor()->getY() * (1 + 7) + 4 + 2] = 'X';
+    printLine[player1->getCursor()->getX() * printLineLength * 4 + printLineLength * 2 + player1->getCursor()->getY() * (1 + 7) + 4] = 'X';
 
     std::cout << printLine << std::endl;
 }

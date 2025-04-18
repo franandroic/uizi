@@ -1,9 +1,13 @@
 #include "player.h"
 
+// TODO define max of 2 actions and add attack option
+
 Player::Player(std::string n, Cursor *c) {
 
     name = n;
     cursor = c;
+    x = c -> getX();
+    y = c -> getY();
     input = '0';
     signalToQuit = false;
 }
@@ -40,7 +44,14 @@ bool Player::handleInput() {
 
         switch (input) {
             case '\n': {
+                x = getCursor() -> getX();
+                y = getCursor() -> getY();
                 return true;
+            }
+            case ' ': {
+                getCursor() -> setX(x);
+                getCursor() -> setY(y);
+                return false;
             }
             case 'q': {
                 signalToQuit = true;

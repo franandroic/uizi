@@ -26,4 +26,8 @@ public:
 
     int getY();
 
+    void setX(int newx);
+
+    void setY(int newy);
+
 };

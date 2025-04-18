@@ -16,6 +16,8 @@ private:
     std::string name;
 
     Cursor *cursor;
+    
+    int x, y;
 
     char input;
 
