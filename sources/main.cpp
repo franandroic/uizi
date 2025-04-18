@@ -8,6 +8,9 @@
 #include "zone.h"
 #include "player.h"
 
+#define NUM_OF_PLAYERS 2
+#define SIZE_OF_MAP 8
+
 bool running = true;
 
 void enableTerminalRawMode() {
@@ -39,22 +42,32 @@ int main(int argc, char *argv[]) {
 
         signal(SIGINT, handleInterruption);
 
+        /*
         if (argc != 3) throw std::runtime_error("Bad number of arguments!");
 
         int x = atoi(argv[1]);
         int y = atoi(argv[2]);
 
         if (x == 0 || y == 0) throw std::runtime_error("Map dimension can't be 0!");
+        */
 
-        Map map(x, y);
-        Cursor cursor1(x, y);
-        Cursor cursor2(x, y);
-        Player player1("Player 1", &cursor1);
-        Player player2("Player 2", &cursor2);
-        Zone zone(&map, &player1, &player2);
+        Map map(SIZE_OF_MAP, SIZE_OF_MAP);
+        Zone zone(&map);
 
-        //map.print();
-        //zone.print();
+        std::vector<std::string> playerNames = {"Player 1", "Player 2"};
+        std::vector<Cursor> cursors;
+        std::vector<Player> players;
+
+        cursors.reserve(NUM_OF_PLAYERS);
+        players.reserve(NUM_OF_PLAYERS);
+
+        for (int i = 0; i < NUM_OF_PLAYERS; i++) {
+            cursors.emplace_back(SIZE_OF_MAP, SIZE_OF_MAP);
+            players.emplace_back(playerNames[i], &cursors[i]);
+            zone.registerPlayer(&players[i]);
+        }
+
+        std::cout << players[0].getName() << " " << players[0].getCursor()->getX() << " " << players[0].getCursor()->getY() << std::endl;
 
         enableTerminalRawMode();
 
@@ -62,26 +75,19 @@ int main(int argc, char *argv[]) {
 
             std::cout << "\033[2J\033[H";   //change 2 to 3 to disable scrollback
             
-            do {
-                std::cout << player1.getName() << std::endl;
-                zone.print();
-            } while (!player1.handleInput());
+            for (Player player : players) {
+                do {
+                    std::cout << player.getName() << std::endl;
+                    zone.print();
+                } while (!player.handleInput());
+    
+                if (player.getSignalToQuit()) {
+                    running = false;
+                    break;
+                }
 
-            if (player1.getSignalToQuit()) {
-                running = false;
-                break;
+                zone.nextTurn();
             }
-            
-            do {
-                std::cout << player2.getName() << std::endl;
-                zone.print();
-            } while (!player2.handleInput());
-
-            if (player2.getSignalToQuit()) {
-                running = false;
-                break;
-            }
-
         }
 
     } catch (const std::exception &e) {
