@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <algorithm>
 
 #include "map.h"
 #include "player.h"
@@ -10,7 +12,7 @@ class Zone {
 
 public:
 
-    Zone(Map *m, Player *p1, Player *p2);
+    Zone(Map *m);
 
     //~Zone();
 
@@ -18,8 +20,8 @@ private:
 
     Map *map;
 
-    Player *player1;
-    Player *player2;
+    std::vector<Player *> players;
+    int activePlayerIdx;
 
     std::string printLine;
     int printIdx;
@@ -28,5 +30,9 @@ private:
 public:
 
     void print();
+
+    void registerPlayer(Player *p);
+
+    void nextTurn();
 
 };

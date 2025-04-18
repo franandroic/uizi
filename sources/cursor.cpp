@@ -21,7 +21,6 @@ void Cursor::move(bool direction, int distance) {
         }
 
         x += distance;
-        std::cout << "X DISTANCE" << std::endl;
 
     } else {
         
@@ -31,8 +30,7 @@ void Cursor::move(bool direction, int distance) {
         }
 
         y += distance;
-
-        std::cout << "Y DISTANCE" << std::endl;
+        
     }
 
 }

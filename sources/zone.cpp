@@ -1,13 +1,11 @@
 #include "zone.h"
 
-Zone::Zone(Map *m, Player *p1, Player *p2) {
+Zone::Zone(Map *m) {
 
     if (!m) throw std::runtime_error("Map non-existant!");
     map = m;
 
-    if (!p1 || !p2) throw std::runtime_error("There aren't two players!");
-    player1 = p1;
-    player2 = p2;
+    activePlayerIdx = -1;
 
     printLine = "";
     printIdx = 0;
@@ -39,7 +37,23 @@ void Zone::print() {
         printLine +="\n";
     }
 
-    printLine[player1->getCursor()->getX() * printLineLength * 4 + printLineLength * 2 + player1->getCursor()->getY() * (1 + 7) + 4] = 'X';
+    printLine[players[activePlayerIdx]->getCursor()->getX() * printLineLength * 4 + printLineLength * 2 + players[activePlayerIdx]->getCursor()->getY() * (1 + 7) + 4] = 'X';
 
     std::cout << printLine << std::endl;
+}
+
+void Zone::registerPlayer(Player *p) {
+
+    if (std::find(players.begin(), players.end(), p) != players.end()) throw std::runtime_error("Player already added!");
+
+    players.push_back(p);
+
+    if (players.size() == 1) activePlayerIdx = 0;
+}
+
+void Zone::nextTurn() {
+
+    if (players.size() == 0) throw std::runtime_error("No players!");
+
+    activePlayerIdx = (activePlayerIdx + 1) % players.size();
 }
