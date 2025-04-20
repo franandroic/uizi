@@ -1,6 +1,6 @@
 #include "player.h"
 
-// TODO define max of 2 actions and add attack option
+#define MAX_ACTIONS 2
 
 Player::Player(std::string n, Cursor *c) {
 
@@ -10,30 +10,35 @@ Player::Player(std::string n, Cursor *c) {
     y = c -> getY();
     input = '0';
     signalToQuit = false;
+    actionsTaken = 0;
 }
 
 bool Player::handleInput() {
 
-    input = getchar();
+    input = getchar();  
 
-    if (input == '\033') {
+    if (input == '\033' && actionsTaken < MAX_ACTIONS) {
 
         getchar();
         switch (getchar()) {
             case 'A': {
                 cursor->move(true, -1);
+                actionsTaken++;
                 break;
             }
             case 'B': {
                 cursor->move(true, 1);
+                actionsTaken++;
                 break;
             }
             case 'C': {
                 cursor->move(false, 1);
+                actionsTaken++;
                 break;
             }
             case 'D': {
                 cursor->move(false, -1);
+                actionsTaken++;
                 break;
             }
             default:
@@ -46,11 +51,13 @@ bool Player::handleInput() {
             case '\n': {
                 x = getCursor() -> getX();
                 y = getCursor() -> getY();
+                actionsTaken = 0;
                 return true;
             }
             case ' ': {
                 getCursor() -> setX(x);
                 getCursor() -> setY(y);
+                actionsTaken = 0;
                 return false;
             }
             case 'q': {

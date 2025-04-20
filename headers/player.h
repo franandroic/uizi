@@ -23,6 +23,8 @@ private:
 
     bool signalToQuit;
 
+    int actionsTaken;
+
 public:
 
     bool handleInput();
