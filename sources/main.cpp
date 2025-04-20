@@ -10,6 +10,7 @@
 
 #define NUM_OF_PLAYERS 2
 #define SIZE_OF_MAP 8
+#define OBSTACLE_DENSITY 10
 
 bool running = true;
 
@@ -51,8 +52,10 @@ int main(int argc, char *argv[]) {
         if (x == 0 || y == 0) throw std::runtime_error("Map dimension can't be 0!");
         */
 
-        Map map(SIZE_OF_MAP, SIZE_OF_MAP);
+        Map map(SIZE_OF_MAP, SIZE_OF_MAP, OBSTACLE_DENSITY);
         Zone zone(&map);
+
+        map.print();
 
         std::vector<std::string> playerNames = {"Player 1", "Player 2"};
         std::vector<Cursor> cursors;

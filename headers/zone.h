@@ -7,6 +7,8 @@
 
 #include "map.h"
 #include "player.h"
+#include "tile.h"
+#include "tileX.h"
 
 class Zone {
 
@@ -14,7 +16,7 @@ public:
 
     Zone(Map *m);
 
-    //~Zone();
+    ~Zone();
 
 private:
 
@@ -23,9 +25,9 @@ private:
     std::vector<Player *> players;
     int activePlayerIdx;
 
-    std::string printLine;
-    int printIdx;
-    int printLineLength;
+    std::vector<std::vector<Tile *>> tiles;
+
+    std::string printString;
 
 public:
 

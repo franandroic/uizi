@@ -6,40 +6,55 @@ Zone::Zone(Map *m) {
     map = m;
 
     activePlayerIdx = -1;
+    
+    tiles.resize(map->getX(), std::vector<Tile *>(map->getY()));
+    for (int row = 0; row < map->getX(); row++) {
+        for (int col = 0; col < map->getY(); col++) {
+            if (map->elementAt(row, col) == '.') tiles[row][col] = new Tile();
+            if (map->elementAt(row, col) == 'X') tiles[row][col] = new TileX();
+        }
+    }
+}
 
-    printLine = "";
-    printIdx = 0;
-    printLineLength = map->getY() * (1 + 7) + 1 + 1;
+Zone::~Zone() {
+
+    for (int row = 0; row < map->getX(); row++) {
+        for (int col = 0; col < map->getY(); col++) {
+            delete tiles[row][col];
+        }
+    }
+
+    tiles.clear();
 }
 
 void Zone::print() {
 
-    printLine = "";
+    printString = "";
 
-    for (int row = 0; row < map->getX() * 4 + 1; row++) {
-        
-        printIdx = row % 4;
+    tiles[players[activePlayerIdx]->getCursor()->getX()][players[activePlayerIdx]->getCursor()->getY()]->markSelected(true);
 
-        for (int col = 0; col < map->getY(); col++) {
-
-            if (printIdx == 0)
-                printLine += "+-------";
-            else
-                printLine += "|       ";
-
+    //Hardcoded tile dimensions to 5x9
+    for (int mapRow = 0; mapRow < map->getX(); mapRow++) {
+        for (int tileRow = 0; tileRow < (5 - 1); tileRow++) {
+            for (int mapCol = 0; mapCol < map->getY(); mapCol++) {
+                for (int tileCol = 0; tileCol < (9 - 1); tileCol++) {
+                    printString += tiles[mapRow][mapCol]->getTile()[tileRow][tileCol];
+                }
+            }
+            printString += tiles[mapRow][map->getY() - 1]->getTile()[tileRow][9 - 1];
+            printString += '\n';
         }
-
-        if (printIdx == 0)
-            printLine += "+";
-        else
-            printLine += "|";
-
-        printLine +="\n";
     }
 
-    printLine[players[activePlayerIdx]->getCursor()->getX() * printLineLength * 4 + printLineLength * 2 + players[activePlayerIdx]->getCursor()->getY() * (1 + 7) + 4] = 'X';
+    for (int mapCol = 0; mapCol < map->getY(); mapCol++) {
+        for (int tileCol = 0; tileCol < (9 - 1); tileCol++) {
+            printString += tiles[map->getX() - 1][mapCol]->getTile()[5 - 1][tileCol];
+        }
+    }
 
-    std::cout << printLine << std::endl;
+    tiles[players[activePlayerIdx]->getCursor()->getX()][players[activePlayerIdx]->getCursor()->getY()]->markSelected(false);
+
+    std::cout << printString << std::endl;
 }
 
 void Zone::registerPlayer(Player *p) {
