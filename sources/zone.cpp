@@ -32,6 +32,8 @@ void Zone::print() {
     printString = "";
 
     tiles[players[activePlayerIdx]->getCursor()->getX()][players[activePlayerIdx]->getCursor()->getY()]->markSelected(true);
+    
+    tiles[players[activePlayerIdx]->getX()][players[activePlayerIdx]->getY()]->overlayIcon(true, players[activePlayerIdx]->getAvatar()->getIcon());
 
     //Hardcoded tile dimensions to 5x9
     for (int mapRow = 0; mapRow < map->getX(); mapRow++) {
@@ -53,6 +55,8 @@ void Zone::print() {
     }
 
     tiles[players[activePlayerIdx]->getCursor()->getX()][players[activePlayerIdx]->getCursor()->getY()]->markSelected(false);
+
+    tiles[players[activePlayerIdx]->getX()][players[activePlayerIdx]->getY()]->overlayIcon(false, players[activePlayerIdx]->getAvatar()->getIcon());
 
     std::cout << printString << std::endl;
 }

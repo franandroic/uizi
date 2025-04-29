@@ -4,6 +4,7 @@
 #include <string>
 
 #include "cursor.h"
+#include "icon.h"
 
 class Player {
 
@@ -16,6 +17,8 @@ private:
     std::string name;
 
     Cursor *cursor;
+
+    Icon avatar;        //For now it's an object until further development (to change into a pointer)
     
     int x, y;
 
@@ -32,6 +35,12 @@ public:
     std::string getName();
 
     Cursor *getCursor();
+
+    Icon *getAvatar();
+
+    int getX();
+
+    int getY();
 
     bool getSignalToQuit();
 

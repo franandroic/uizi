@@ -81,6 +81,18 @@ Cursor *Player::getCursor() {
     return cursor;
 }
 
+Icon *Player::getAvatar() {
+    return &avatar;
+}
+
+int Player::getX() {
+    return x;
+}
+
+int Player::getY() {
+    return y;
+}
+
 bool Player::getSignalToQuit() {
     return signalToQuit;
 }
