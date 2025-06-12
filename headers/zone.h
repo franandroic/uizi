@@ -9,8 +9,9 @@
 #include "player.h"
 #include "tile.h"
 #include "tileX.h"
+#include "playerObserver.h"
 
-class Zone {
+class Zone : public PlayerObserver {
 
 public:
 
@@ -36,5 +37,7 @@ public:
     void registerPlayer(Player *p);
 
     void nextTurn();
+
+    void updatePlayerListener() override;
 
 };

@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
             cursors.emplace_back(SIZE_OF_MAP, SIZE_OF_MAP);
             players.emplace_back(playerNames[i], &cursors[i]);
             zone.registerPlayer(&players[i]);
+            players[i].subscribePlayerListener(&zone);
         }
 
         std::cout << players[0].getName() << " " << players[0].getCursor()->getX() << " " << players[0].getCursor()->getY() << std::endl;
@@ -79,17 +80,9 @@ int main(int argc, char *argv[]) {
             std::cout << "\033[2J\033[H";   //change 2 to 3 to disable scrollback
             
             for (Player &player : players) {
-                do {
-                    std::cout << player.getName() << std::endl;
-                    zone.print();
-                } while (!player.handleInput());
-    
-                if (player.getSignalToQuit()) {
-                    running = false;
-                    break;
-                }
-
-                zone.nextTurn();
+                running = player.handleInput();
+                if (running) zone.nextTurn();
+                else break;
             }
         }
 

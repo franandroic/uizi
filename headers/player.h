@@ -4,7 +4,8 @@
 #include <string>
 
 #include "cursor.h"
-#include "icon.h"
+#include "unit.h"
+#include "playerObserver.h"
 
 class Player {
 
@@ -18,30 +19,38 @@ private:
 
     Cursor *cursor;
 
-    Icon avatar;        //For now it's an object until further development (to change into a pointer)
-    
-    int x, y;
+    std::vector<Unit> units;
+
+    int activeUnitIdx;
 
     char input;
 
     bool signalToQuit;
 
-    int actionsTaken;
+    std::vector<PlayerObserver *> listeners;
 
 public:
 
     bool handleInput();
 
+    bool handleUnitMovement();
+
     std::string getName();
 
     Cursor *getCursor();
 
-    Icon *getAvatar();
+    std::vector<Unit> *getUnits();
 
-    int getX();
+    Unit *getUnit(int idx);
 
-    int getY();
+    int getActiveUnitIdx();
+
+    int getNumberOfUnits();
 
     bool getSignalToQuit();
+
+    void subscribePlayerListener(PlayerObserver *po);
+
+    void notifyListeners();
 
 };

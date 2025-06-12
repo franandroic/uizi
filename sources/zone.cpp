@@ -30,10 +30,13 @@ Zone::~Zone() {
 void Zone::print() {
 
     printString = "";
+    Player *activePlayer = players[activePlayerIdx];
 
-    tiles[players[activePlayerIdx]->getCursor()->getX()][players[activePlayerIdx]->getCursor()->getY()]->markSelected(true);
+    tiles[activePlayer->getCursor()->getX()][activePlayer->getCursor()->getY()]->markSelected(true);
     
-    tiles[players[activePlayerIdx]->getX()][players[activePlayerIdx]->getY()]->overlayIcon(true, players[activePlayerIdx]->getAvatar()->getIcon());
+    for (int uIdx = 0; uIdx < activePlayer->getNumberOfUnits(); uIdx++) {
+        tiles[activePlayer->getUnit(uIdx)->getX()][activePlayer->getUnit(uIdx)->getY()]->overlayIcon(true, activePlayer->getUnit(uIdx)->getIcon()->getIcon());
+    }
 
     //Hardcoded tile dimensions to 5x9
     for (int mapRow = 0; mapRow < map->getX(); mapRow++) {
@@ -54,9 +57,11 @@ void Zone::print() {
         }
     }
 
-    tiles[players[activePlayerIdx]->getCursor()->getX()][players[activePlayerIdx]->getCursor()->getY()]->markSelected(false);
-
-    tiles[players[activePlayerIdx]->getX()][players[activePlayerIdx]->getY()]->overlayIcon(false, players[activePlayerIdx]->getAvatar()->getIcon());
+    tiles[activePlayer->getCursor()->getX()][activePlayer->getCursor()->getY()]->markSelected(false);
+    
+    for (int uIdx = 0; uIdx < activePlayer->getNumberOfUnits(); uIdx++) {
+        tiles[activePlayer->getUnit(uIdx)->getX()][activePlayer->getUnit(uIdx)->getY()]->overlayIcon(false, activePlayer->getUnit(uIdx)->getIcon()->getIcon());
+    }
 
     std::cout << printString << std::endl;
 }
@@ -75,4 +80,9 @@ void Zone::nextTurn() {
     if (players.size() == 0) throw std::runtime_error("No players!");
 
     activePlayerIdx = (activePlayerIdx + 1) % players.size();
+}
+
+void Zone::updatePlayerListener() {
+    map->print();
+    print();
 }

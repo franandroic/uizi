@@ -24,9 +24,9 @@ void Tile::markSelected(bool b) {
     else tile[height / 2][width / 2] = centralChar;
 }
 
-void Tile::overlayIcon(bool b, std::vector<std::vector<char>> icon) {
+void Tile::overlayIcon(bool draw, std::vector<std::vector<char>> icon) {
 
-    if (b) {
+    if (draw) {
         
         //hardcoded values for now
         for (int rowT = 1, rowI = 0; rowT < 4, rowI < 3; rowT++, rowI++) {

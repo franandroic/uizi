@@ -34,6 +34,11 @@ void Cursor::move(bool direction, int distance) {
 
 }
 
+void Cursor::moveTo(int nx, int ny) {
+    x = nx;
+    y = ny;
+}
+
 int Cursor::getX() {
     return x;
 }
@@ -42,10 +47,10 @@ int Cursor::getY() {
     return y;
 }
 
-void Cursor::setX(int newx) {
-    x = newx;
+void Cursor::setX(int nx) {
+    x = nx;
 }
 
-void Cursor::setY(int newy) {
-    y = newy;
+void Cursor::setY(int ny) {
+    y = ny;
 }

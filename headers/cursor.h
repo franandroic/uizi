@@ -22,12 +22,14 @@ public:
 
     void move(bool direction, int distance);
 
+    void moveTo(int nx, int ny);
+
     int getX();
 
     int getY();
 
-    void setX(int newx);
+    void setX(int nx);
 
-    void setY(int newy);
+    void setY(int ny);
 
 };

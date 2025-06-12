@@ -1,44 +1,59 @@
 #include "player.h"
 
-#define MAX_ACTIONS 2
-
 Player::Player(std::string n, Cursor *c) {
 
     name = n;
     cursor = c;
-    x = c -> getX();
-    y = c -> getY();
     input = '0';
     signalToQuit = false;
-    actionsTaken = 0;
+
+    //TODO hard-coded starting units, change it
+    units.push_back(Unit(0, 0));
+    units.push_back(Unit(0, 1));
+    units.push_back(Unit(0, 2));
+    activeUnitIdx = 0;
 }
 
 bool Player::handleInput() {
 
+    for (int uIdx = 0; uIdx < units.size(); uIdx++) {
+
+        activeUnitIdx = uIdx;
+        cursor->moveTo(units[activeUnitIdx].getX(), units[activeUnitIdx].getY());
+
+        do {
+            std::cout << name << std::endl;
+            notifyListeners();
+        } while (!handleUnitMovement());
+
+        if (signalToQuit) return false;
+    }
+
+    return true;
+}
+
+bool Player::handleUnitMovement() {
+
     input = getchar();  
 
-    if (input == '\033' && actionsTaken < MAX_ACTIONS) {
+    if (input == '\033') {
 
         getchar();
         switch (getchar()) {
             case 'A': {
                 cursor->move(true, -1);
-                actionsTaken++;
                 break;
             }
             case 'B': {
                 cursor->move(true, 1);
-                actionsTaken++;
                 break;
             }
             case 'C': {
                 cursor->move(false, 1);
-                actionsTaken++;
                 break;
             }
             case 'D': {
                 cursor->move(false, -1);
-                actionsTaken++;
                 break;
             }
             default:
@@ -49,15 +64,11 @@ bool Player::handleInput() {
 
         switch (input) {
             case '\n': {
-                x = getCursor() -> getX();
-                y = getCursor() -> getY();
-                actionsTaken = 0;
+                units[activeUnitIdx].moveTo(cursor->getX(), cursor->getY());
                 return true;
             }
             case ' ': {
-                getCursor() -> setX(x);
-                getCursor() -> setY(y);
-                actionsTaken = 0;
+                cursor->moveTo(units[activeUnitIdx].getX(), units[activeUnitIdx].getY());
                 return false;
             }
             case 'q': {
@@ -81,18 +92,33 @@ Cursor *Player::getCursor() {
     return cursor;
 }
 
-Icon *Player::getAvatar() {
-    return &avatar;
+std::vector<Unit> *Player::getUnits() {
+    return &units;
 }
 
-int Player::getX() {
-    return x;
+Unit *Player::getUnit(int idx) {
+    if (idx >= units.size()) return nullptr;
+    return &units[idx];
 }
 
-int Player::getY() {
-    return y;
+int Player::getActiveUnitIdx() {
+    return activeUnitIdx;
+}
+
+int Player::getNumberOfUnits() {
+    return units.size();
 }
 
 bool Player::getSignalToQuit() {
     return signalToQuit;
+}
+
+void Player::subscribePlayerListener(PlayerObserver *po) {
+    listeners.push_back(po);
+}
+
+void Player::notifyListeners() {
+    for (int i = 0; i < listeners.size(); i++) {
+        listeners[i]->updatePlayerListener();
+    }
 }
