@@ -5,7 +5,9 @@
 #include <cstdlib>
 #include <ctime>
 
-class Map {
+#include "unitObserver.h"
+
+class Map : public UnitObserver {
 
 public:
 
@@ -31,12 +33,18 @@ public:
 
     std::vector<std::vector<char>> map;
 
+    std::vector<std::vector<char>> dynamicMap;
+
     void print();
+
+    void printDynamic();
 
     char elementAt(int ix, int iy);
 
     int getX();
 
     int getY();
+
+    bool updateUnitListener(int ownerId, int oldX, int oldY, int newX, int newY) override;
 
 };

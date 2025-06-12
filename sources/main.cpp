@@ -7,6 +7,8 @@
 #include "map.h"
 #include "zone.h"
 #include "player.h"
+#include "combatInterface.h"
+#include "aiAdapter.h"
 
 #define NUM_OF_PLAYERS 2
 #define SIZE_OF_MAP 8
@@ -54,8 +56,11 @@ int main(int argc, char *argv[]) {
 
         Map map(SIZE_OF_MAP, SIZE_OF_MAP, OBSTACLE_DENSITY);
         Zone zone(&map);
+        CombatInterface combatInterface;
 
-        map.print();
+        AiAdapter adapter(&map);
+
+        //map.print();
 
         std::vector<std::string> playerNames = {"Player 1", "Player 2"};
         std::vector<Cursor> cursors;
@@ -66,12 +71,18 @@ int main(int argc, char *argv[]) {
 
         for (int i = 0; i < NUM_OF_PLAYERS; i++) {
             cursors.emplace_back(SIZE_OF_MAP, SIZE_OF_MAP);
-            players.emplace_back(playerNames[i], &cursors[i]);
+            players.emplace_back(i + 1, playerNames[i], &cursors[i]);
             zone.registerPlayer(&players[i]);
             players[i].subscribePlayerListener(&zone);
+            for (int j = 0; j < players[i].getNumberOfUnits(); j++) {
+                players[i].getUnit(j)->subscribeUnitListener(&map);
+                players[i].getUnit(j)->moveTo(players[i].getUnit(j)->getX(), players[i].getUnit(j)->getY());
+            }
+            combatInterface.registerPlayer(&players[i]);
+            players[i].subscribeCombatListener(&combatInterface);
         }
 
-        std::cout << players[0].getName() << " " << players[0].getCursor()->getX() << " " << players[0].getCursor()->getY() << std::endl;
+        //std::cout << players[0].getName() << " " << players[0].getCursor()->getX() << " " << players[0].getCursor()->getY() << std::endl;
 
         enableTerminalRawMode();
 
@@ -83,6 +94,9 @@ int main(int argc, char *argv[]) {
                 running = player.handleInput();
                 if (running) zone.nextTurn();
                 else break;
+
+                adapter.constructGameStateString();
+                std::cout << adapter.getGameState() << std::endl;
             }
         }
 

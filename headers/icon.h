@@ -23,4 +23,6 @@ public:
 
     int getWidth();
 
+    void embedId(int id1, int id2);
+
 };

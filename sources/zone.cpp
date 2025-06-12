@@ -34,8 +34,10 @@ void Zone::print() {
 
     tiles[activePlayer->getCursor()->getX()][activePlayer->getCursor()->getY()]->markSelected(true);
     
-    for (int uIdx = 0; uIdx < activePlayer->getNumberOfUnits(); uIdx++) {
-        tiles[activePlayer->getUnit(uIdx)->getX()][activePlayer->getUnit(uIdx)->getY()]->overlayIcon(true, activePlayer->getUnit(uIdx)->getIcon()->getIcon());
+    for (int pIdx = 0; pIdx < players.size(); pIdx++) {
+        for (int uIdx = 0; uIdx < players[pIdx]->getNumberOfUnits(); uIdx++) {
+            tiles[players[pIdx]->getUnit(uIdx)->getX()][players[pIdx]->getUnit(uIdx)->getY()]->overlayIcon(true, players[pIdx]->getUnit(uIdx)->getIcon()->getIcon());
+        }
     }
 
     //Hardcoded tile dimensions to 5x9
@@ -59,8 +61,10 @@ void Zone::print() {
 
     tiles[activePlayer->getCursor()->getX()][activePlayer->getCursor()->getY()]->markSelected(false);
     
-    for (int uIdx = 0; uIdx < activePlayer->getNumberOfUnits(); uIdx++) {
-        tiles[activePlayer->getUnit(uIdx)->getX()][activePlayer->getUnit(uIdx)->getY()]->overlayIcon(false, activePlayer->getUnit(uIdx)->getIcon()->getIcon());
+    for (int pIdx = 0; pIdx < players.size(); pIdx++) {
+        for (int uIdx = 0; uIdx < players[pIdx]->getNumberOfUnits(); uIdx++) {
+            tiles[players[pIdx]->getUnit(uIdx)->getX()][players[pIdx]->getUnit(uIdx)->getY()]->overlayIcon(false, players[pIdx]->getUnit(uIdx)->getIcon()->getIcon());
+        }
     }
 
     std::cout << printString << std::endl;
@@ -83,6 +87,5 @@ void Zone::nextTurn() {
 }
 
 void Zone::updatePlayerListener() {
-    map->print();
     print();
 }

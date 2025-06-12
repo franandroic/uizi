@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "playerObserver.h"
+
 class Tile {
 
 public:
@@ -22,6 +24,8 @@ protected:
 public:
 
     void markSelected(bool b);
+
+    void highlight(bool b);
 
     void overlayIcon(bool b, std::vector<std::vector<char>> icon);
 
