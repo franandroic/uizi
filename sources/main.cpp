@@ -3,6 +3,8 @@
 #include <vector>
 #include <csignal>
 #include <termios.h>
+#include <thread>
+#include <chrono>
 
 #include "map.h"
 #include "zone.h"
@@ -58,8 +60,6 @@ int main(int argc, char *argv[]) {
         Zone zone(&map);
         CombatInterface combatInterface;
 
-        AiAdapter adapter(&map);
-
         //map.print();
 
         std::vector<std::string> playerNames = {"Player 1", "Player 2"};
@@ -84,6 +84,8 @@ int main(int argc, char *argv[]) {
 
         //std::cout << players[0].getName() << " " << players[0].getCursor()->getX() << " " << players[0].getCursor()->getY() << std::endl;
 
+        AiAdapter adapter(&map, &players, &combatInterface);
+        
         enableTerminalRawMode();
 
         while(running) {
@@ -91,12 +93,21 @@ int main(int argc, char *argv[]) {
             std::cout << "\033[2J\033[H";   //change 2 to 3 to disable scrollback
             
             for (Player &player : players) {
-                running = player.handleInput();
-                if (running) zone.nextTurn();
-                else break;
-
+                if (!running) break;
                 adapter.constructGameStateString();
                 std::cout << adapter.getGameState() << std::endl;
+
+                if (player.getId() == 2) {
+                    std::cout << "--- AI Player's Turn ---" << std::endl;
+                    adapter.makeMove(&player);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                } else {
+                     running = player.handleInput();
+                }
+
+                if (!running) break;
+                if (running) zone.nextTurn();
+
             }
         }
 

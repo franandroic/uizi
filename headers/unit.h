@@ -41,6 +41,8 @@ public:
 
     int getY();
 
+    int getHealth();
+
     void subscribeUnitListener(UnitObserver *uo);
 
     bool takeDamage(int damage);

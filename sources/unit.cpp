@@ -46,6 +46,10 @@ int Unit::getY() {
     return y;
 }
 
+int Unit::getHealth() {
+    return health;
+}
+
 void Unit::subscribeUnitListener(UnitObserver *uo) {
     listeners.push_back(uo);
 }
