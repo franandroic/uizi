@@ -57,9 +57,9 @@ Unit* AiAdapter::findClosestEnemyUnit(Player *aiPlayer, Unit *aiUnit, int &targe
             for (int i = 0; i < otherPlayer.getNumberOfUnits(); ++i) {
                 Unit *enemyUnit = otherPlayer.getUnit(i);
                 if (enemyUnit->getHealth() > 0) {
-                    double distance = std::sqrt(std::pow(aiUnit->getX() - enemyUnit->getX(), 2) +
-                                                std::pow(aiUnit->getY() - enemyUnit->getY(), 2));
-                    if (distance < minDistance) {
+                    double distance = std::abs(aiUnit->getX() - enemyUnit->getX()) +
+                                        std::abs(aiUnit->getY() - enemyUnit->getY());
+                    if (distance <= minDistance) {
                         minDistance = distance;
                         closestEnemy = enemyUnit;
                         targetX = enemyUnit->getX();
@@ -85,6 +85,8 @@ void AiAdapter::makeMove(Player *aiPlayer) {
 
         int targetX = -1, targetY = -1;
         Unit *closestEnemy = findClosestEnemyUnit(aiPlayer, currentAiUnit, targetX, targetY);
+        targetX = closestEnemy->getX();
+        targetY = closestEnemy->getY();
 
         if (closestEnemy) {
 
@@ -92,13 +94,14 @@ void AiAdapter::makeMove(Player *aiPlayer) {
             int currentY = currentAiUnit->getY();
 
             int bestNx = -1, bestNy = -1;
-            double minDistanceToEnemy = std::numeric_limits<double>::max();
-            //bool foundValidMoveTarget = false;
+            int minDistanceToEnemy = std::numeric_limits<int>::max();
+            bool foundValidMoveTarget = false;
             bool moved = false;
 
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dx = -2; dx <= 2; ++dx) {
 
+                    if (dx == 0 && dy == 0) continue;
                     if (std::abs(dx) + std::abs(dy) > 2) continue;
 
                     int potentialNx = currentX + dx;
@@ -107,24 +110,25 @@ void AiAdapter::makeMove(Player *aiPlayer) {
                     if (potentialNx >= 0 && potentialNx < map->getX() &&
                         potentialNy >= 0 && potentialNy < map->getY()) {
 
-                        double distToEnemy = std::sqrt(std::pow(potentialNx - targetX, 2) +
-                                                        std::pow(potentialNy - targetY, 2));
+                        int distToEnemy = std::abs(potentialNx - targetX) + std::abs(potentialNy - targetY);
 
                         if (distToEnemy <= minDistanceToEnemy) {
-                            bestNx = potentialNx;
-                            bestNy = potentialNy;
-                            //foundValidMoveTarget = true;
-                            moved = currentAiUnit->moveTo(bestNx, bestNy);
-                            if (moved) minDistanceToEnemy = distToEnemy;
+                            foundValidMoveTarget = true;
+                            moved = currentAiUnit->moveTo(potentialNx, potentialNy);
+                            if (moved) {
+                                minDistanceToEnemy = distToEnemy;
+                                bestNx = potentialNx;
+                                bestNy = potentialNy;
+                                foundValidMoveTarget = true;
+                            }
+                            currentAiUnit->moveTo(currentX, currentY);
                         }
                     }
-
-                    if (moved) break;
                 }
-                if (moved) break;
             }
 
-            if (moved) {
+            if (foundValidMoveTarget) {
+                currentAiUnit->moveTo(bestNx, bestNy);
                 std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
                             << " moved from (" << currentX << "," << currentY << ") to (" << bestNx
                             << "," << bestNy << ") towards enemy at (" << targetX << "," << targetY << ")" << std::endl;
