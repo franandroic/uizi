@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <cmath>
 
 #include "map.h"
 #include "player.h"

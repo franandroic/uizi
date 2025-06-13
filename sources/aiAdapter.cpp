@@ -87,60 +87,63 @@ void AiAdapter::makeMove(Player *aiPlayer) {
         Unit *closestEnemy = findClosestEnemyUnit(aiPlayer, currentAiUnit, targetX, targetY);
 
         if (closestEnemy) {
-            if (isUnitAdjacent(currentAiUnit, closestEnemy)) {
-                std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
-                          << " attacks enemy unit " << closestEnemy->getId() << " at (" << closestEnemy->getX()
-                          << "," << closestEnemy->getY() << ")!" << std::endl;
 
-                if (combatInterface) {
-                    combatInterface->updateCombatListener(aiPlayer, closestEnemy->getX(), closestEnemy->getY());
-                } else {
-                    std::cerr << "Error: CombatInterface pointer is null in AiAdapter::makeMove(). Cannot perform attack." << std::endl;
-                }
-            } else {
-                int currentX = currentAiUnit->getX();
-                int currentY = currentAiUnit->getY();
+            int currentX = currentAiUnit->getX();
+            int currentY = currentAiUnit->getY();
 
-                int bestNx = -1, bestNy = -1;
-                double minDistanceToEnemy = std::numeric_limits<double>::max();
-                bool foundValidMoveTarget = false;
+            int bestNx = -1, bestNy = -1;
+            double minDistanceToEnemy = std::numeric_limits<double>::max();
+            //bool foundValidMoveTarget = false;
+            bool moved = false;
 
-                for (int dy = -2; dy <= 2; ++dy) {
-                    for (int dx = -2; dx <= 2; ++dx) {
-                        if (dx == 0 && dy == 0) continue;
+            for (int dy = -2; dy <= 2; ++dy) {
+                for (int dx = -2; dx <= 2; ++dx) {
 
-                        int potentialNx = currentX + dx;
-                        int potentialNy = currentY + dy;
+                    if (std::abs(dx) + std::abs(dy) > 2) continue;
 
-                        if (potentialNx >= 0 && potentialNx < map->getX() &&
-                            potentialNy >= 0 && potentialNy < map->getY()) {
+                    int potentialNx = currentX + dx;
+                    int potentialNy = currentY + dy;
 
-                            double distToEnemy = std::sqrt(std::pow(potentialNx - targetX, 2) +
-                                                            std::pow(potentialNy - targetY, 2));
+                    if (potentialNx >= 0 && potentialNx < map->getX() &&
+                        potentialNy >= 0 && potentialNy < map->getY()) {
 
-                            if (distToEnemy < minDistanceToEnemy) {
-                                minDistanceToEnemy = distToEnemy;
-                                bestNx = potentialNx;
-                                bestNy = potentialNy;
-                                foundValidMoveTarget = true;
-                            }
+                        double distToEnemy = std::sqrt(std::pow(potentialNx - targetX, 2) +
+                                                        std::pow(potentialNy - targetY, 2));
+
+                        if (distToEnemy <= minDistanceToEnemy) {
+                            bestNx = potentialNx;
+                            bestNy = potentialNy;
+                            //foundValidMoveTarget = true;
+                            moved = currentAiUnit->moveTo(bestNx, bestNy);
+                            if (moved) minDistanceToEnemy = distToEnemy;
                         }
                     }
+
+                    if (moved) break;
+                }
+                if (moved) break;
+            }
+
+            if (moved) {
+                std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
+                            << " moved from (" << currentX << "," << currentY << ") to (" << bestNx
+                            << "," << bestNy << ") towards enemy at (" << targetX << "," << targetY << ")" << std::endl;
+
+                if (isUnitAdjacent(currentAiUnit, closestEnemy)) {
+                    std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
+                            << " attacks enemy unit " << closestEnemy->getId() << " at (" << closestEnemy->getX()
+                            << "," << closestEnemy->getY() << ")!" << std::endl;
+
+                    if (combatInterface) {
+                        combatInterface->updateCombatListener(aiPlayer, closestEnemy->getX(), closestEnemy->getY());
+                    } else {
+                        std::cerr << "Error: CombatInterface pointer is null in AiAdapter::makeMove(). Cannot perform attack." << std::endl;
+                    }
                 }
 
-                if (foundValidMoveTarget) {
-                    if (currentAiUnit->moveTo(bestNx, bestNy)) {
-                        std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
-                                  << " moved from (" << currentX << "," << currentY << ") to (" << bestNx
-                                  << "," << bestNy << ") towards enemy at (" << targetX << "," << targetY << ")" << std::endl;
-                    } else {
-                        std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
-                                  << " tried to move to (" << bestNx << "," << bestNy << ") but failed (blocked)." << std::endl;
-                    }
-                } else {
-                    std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
-                              << " could not find a valid move target towards enemy within 2 squares." << std::endl;
-                }
+            } else {
+                std::cout << "AI Player " << aiPlayer->getId() << ", Unit " << currentAiUnit->getId()
+                            << " could not find a valid move target towards enemy within 2 squares." << std::endl;
             }
         }
     }
